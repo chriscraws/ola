@@ -25,6 +25,8 @@
 #ifndef INCLUDE_OLA_CLIENT_STREAMINGCLIENT_H_
 #define INCLUDE_OLA_CLIENT_STREAMINGCLIENT_H_
 
+#include <unordered_map>
+
 #include <ola/Constants.h>
 #include <ola/DmxBuffer.h>
 #include <ola/base/Macro.h>
@@ -70,6 +72,15 @@ class StreamingClientInterface {
   virtual void Stop() = 0;
 
   virtual bool SendDmx(unsigned int universe, const DmxBuffer &data) = 0;
+
+  struct DmxRequest {
+    DmxRequest(unsigned int universe, const DmxBuffer &data) :
+        universe(universe), data(data) {}
+    
+    unsigned int universe;
+    const DmxBuffer &data;
+  };
+  virtual bool SendDmx(const std::unordered_map<unsigned int, DmxBuffer>& data) = 0;
 
   virtual bool SendDMX(unsigned int universe,
                        const DmxBuffer &data,
@@ -153,6 +164,8 @@ class StreamingClient : public StreamingClientInterface {
    *   has been closed.
    */
   bool SendDmx(unsigned int universe, const DmxBuffer &data);
+
+  bool SendDmx(const std::unordered_map<unsigned int, DmxBuffer>& data);
 
   /**
    * @brief Send DMX data.

@@ -138,6 +138,39 @@ bool StreamingClient::SendDMX(unsigned int universe,
   return Send(universe, args.priority, data);
 }
 
+bool StreamingClient::SendDmx(
+  const std::unordered_map<unsigned int, DmxBuffer>& data) {
+  if (!m_stub || !m_socket->ValidReadDescriptor())
+    return false;
+
+  // We select() on the fd here to see if the remove end has closed the
+  // connection. We could skip this and rely on the EPIPE delivered by the
+  // write() below, but that introduces a race condition in the unittests.
+  m_socket_closed = false;
+  m_ss->RunOnce();
+
+  if (m_socket_closed) {
+    Stop();
+    return false;
+  }
+
+  ola::proto::RepeatedDmxData request;
+  for (const auto& pair : data) {
+    auto* item = request.add_dmx_data();
+    item->set_universe(pair.first);
+    item->set_data(pair.second.Get());
+    item->set_priority(100);
+  }
+
+  m_stub->StreamRepeatedDmxData(NULL, &request, NULL, NULL);
+
+  if (m_socket_closed) {
+    Stop();
+    return false;
+  }
+  return true;
+}
+
 bool StreamingClient::Send(unsigned int universe, uint8_t priority,
                            const DmxBuffer &data) {
   if (!m_stub || !m_socket->ValidReadDescriptor())

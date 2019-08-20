@@ -246,6 +246,23 @@ class OlaClientCore: public ola::proto::OlaClientService {
                const DmxBuffer &data,
                const SendDMXArgs &args);
 
+
+  struct DmxRequest {
+    DmxRequest(unsigned int universe, const DmxBuffer &data) :
+        universe(universe), data(data) {}
+    
+    unsigned int universe;
+    const DmxBuffer &data;
+  };
+
+  /**
+   * @brief Send repeated DMX data to save on RPC with many universes.
+   * @param universe the universe to send to.
+   * @param data the DmxBuffer with the data
+   * @param args the SendDMXArgs to use for this call.
+   */
+  void SendRepeatedDmx(const std::vector<DmxRequest>& requests);
+
   /**
    * @brief Fetch the latest DMX data for a universe.
    * @param universe the universe id to get data for.

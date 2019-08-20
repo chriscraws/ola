@@ -288,5 +288,15 @@ class DmxBuffer {
  * @endcode
  */
 std::ostream& operator<<(std::ostream &out, const DmxBuffer &data);
+
+struct DmxRequest {
+   DmxRequest(unsigned int universe, const DmxBuffer data) :
+      universe(universe), data(data) {}
+   
+   unsigned int universe;
+   const DmxBuffer &data;
+};
+
 }  // namespace ola
+
 #endif  // INCLUDE_OLA_DMXBUFFER_H_

@@ -237,6 +237,10 @@ message DmxData {
   optional int32 priority = 3;
 }
 
+message RepeatedDmxData {
+  repeated DmxData dmx_data = 1;
+}
+
 message RegisterDmxRequest {
   required int32 universe = 1;
   required RegisterAction action = 2;
@@ -423,6 +427,7 @@ service OlaServerService {
   rpc RDMCommand (RDMRequest) returns (RDMResponse);
   rpc RDMDiscoveryCommand (RDMDiscoveryRequest) returns (RDMResponse);
   rpc StreamDmxData (DmxData) returns (STREAMING_NO_RESPONSE);
+  rpc StreamRepeatedDmxData (RepeatedDmxData) returns (STREAMING_NO_RESPONSE);
 
   // timecode
   rpc SendTimeCode(TimeCode) returns (Ack);

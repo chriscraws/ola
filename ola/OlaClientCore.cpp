@@ -495,6 +495,17 @@ void OlaClientCore::SendDMX(unsigned int universe,
   }
 }
 
+void OlaClientCore::SendRepeatedDmx(const std::vector<DmxRequest>& requests) {
+  ola::proto::RepeatedDmxData request;
+  for (const DmxRequest& req : requests) {
+    ola::proto::DmxData* data = request.add_dmx_data();
+    data->set_universe(req.universe);
+    data->set_data(req.data.Get());
+    data->set_priority(100);
+  }
+  m_stub->StreamRepeatedDmxData(NULL, &request, NULL, NULL);
+}
+
 void OlaClientCore::FetchDMX(unsigned int universe,
                              DMXCallback *callback) {
   ola::proto::UniverseRequest request;

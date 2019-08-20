@@ -99,6 +99,13 @@ class OlaServerServiceImpl : public ola::proto::OlaServerService {
                      ::ola::proto::STREAMING_NO_RESPONSE* response,
                      ola::rpc::RpcService::CompletionCallback* done);
 
+  /**
+   * @brief Handle a streaming DMX update, no response is sent.
+   */
+  void StreamRepeatedDmxData(ola::rpc::RpcController* controller,
+                     const ::ola::proto::RepeatedDmxData* request,
+                     ::ola::proto::STREAMING_NO_RESPONSE* response,
+                     ola::rpc::RpcService::CompletionCallback* done);
 
   /**
    * @brief Sets the name of a universe.

@@ -451,7 +451,7 @@ void RpcChannel::HandleRequest(RpcMessage *msg) {
   }
   const MethodDescriptor *method = service->FindMethodByName(msg->name());
   if (!method) {
-    OLA_WARN << "failed to get method descriptor";
+    OLA_WARN << "failed to get method descriptor: " << msg->name();
     SendNotImplemented(msg->id());
     return;
   }
@@ -502,7 +502,7 @@ void RpcChannel::HandleStreamRequest(RpcMessage *msg) {
   }
   const MethodDescriptor *method = service->FindMethodByName(msg->name());
   if (!method) {
-    OLA_WARN << "failed to get method descriptor";
+    OLA_WARN << "failed to get method descriptor: " << msg->name();
     SendNotImplemented(msg->id());
     return;
   }

@@ -19,6 +19,8 @@
  * Copyright (C) 2005 Simon Newton
  */
 
+#include <sstream>
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -217,6 +219,31 @@ void OlaServerServiceImpl::StreamDmxData(
   DmxSource source(buffer, *m_wake_up_time, priority);
   client->DMXReceived(request->universe(), source);
   universe->SourceClientDataChanged(client);
+}
+
+void OlaServerServiceImpl::StreamRepeatedDmxData(
+    RpcController *controller,
+    const ola::proto::RepeatedDmxData* r,
+    ola::proto::STREAMING_NO_RESPONSE*,
+    ola::rpc::RpcService::CompletionCallback*) {
+  for (size_t i = 0; i < r->dmx_data_size(); i++) {
+    const ola::proto::DmxData* request = &r->dmx_data(i);
+    Universe *universe = m_universe_store->GetUniverse(request->universe());
+
+    if (!universe) {
+      return;
+    }
+
+    Client *client = GetClient(controller);
+    DmxBuffer buffer;
+    buffer.Set(request->data());
+
+    uint8_t priority = ola::dmx::SOURCE_PRIORITY_DEFAULT;
+
+    DmxSource source(buffer, *m_wake_up_time, priority);
+    client->DMXReceived(request->universe(), source);
+    universe->SourceClientDataChanged(client);
+  }
 }
 
 void OlaServerServiceImpl::SetUniverseName(
